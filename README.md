@@ -1,4 +1,4 @@
-# Welcome to the Project Contributions Repository 🚀🦥🐙 
+# Welcome to the Project Contributions Repository 🚀🦥
 
 ## About This Repo
 
