@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f0f4f8;
+        /* Light blue background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        width: 400px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #e3f2fd;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background-color 0.3s ease;
+      }
+
+      li.completed {
+        background-color: #c8e6c9;
+        /* Green background when completed */
+        text-decoration: line-through;
+      }
+
+      input[type="checkbox"] {
+        accent-color: #2196f3;
+        /* Blue checkbox */
+        transform: scale(1.5);
+        /* Make checkbox bigger */
+        cursor: pointer;
+      }
+
+      button {
+        background-color: #2196f3;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #1976d2;
+      }
+
+      input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>To-Do List</h1>
+      <input type="text" id="new-task" placeholder="Enter new task" />
+      <ul id="task-list">
+        <li>
+          <input type="checkbox" />
+          <span>Sample Task</span>
+        </li>
+      </ul>
+      <button id="add-task-button">Add Task</button>
+    </div>
+
+    <script>
+      document
+        .getElementById("add-task-button")
+        .addEventListener("click", function () {
+          const taskInput = document.getElementById("new-task");
+          const taskText = taskInput.value.trim();
+
+          if (taskText !== "") {
+            const taskList = document.getElementById("task-list");
+
+            const newTaskItem = document.createElement("li");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+
+            const taskSpan = document.createElement("span");
+            taskSpan.textContent = taskText;
+
+            newTaskItem.appendChild(checkbox);
+            newTaskItem.appendChild(taskSpan);
+            taskList.appendChild(newTaskItem);
+
+            // Clear the input field after adding task
+            taskInput.value = "";
+
+            // Add event listener to checkbox
+            checkbox.addEventListener("change", function () {
+              if (this.checked) {
+                newTaskItem.classList.add("completed");
+              } else {
+                newTaskItem.classList.remove("completed");
+              }
+            });
+          }
+        });
+
+      // Handle ticking/unticking the sample task
+      document
+        .querySelectorAll('input[type="checkbox"]')
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const listItem = this.parentElement;
+            if (this.checked) {
+              listItem.classList.add("completed");
+            } else {
+              listItem.classList.remove("completed");
+            }
+          });
+        });
+    </script>
+  </body>
+</html>
