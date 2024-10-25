@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #6b21a8, #3730a3);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .converter-box {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .amount-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .amount-container label {
+            color: #4b5563;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+            width: 80px;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .currency-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .currency-row label {
+            color: #4b5563;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+            width: 80px;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            outline: none;
+            background-color: white;
+        }
+
+        select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .swap-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: none;
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0.5rem auto;
+            transition: background-color 0.2s;
+        }
+
+        .swap-btn:hover {
+            background-color: #4338ca;
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .convert-btn:hover {
+            background-color: #4338ca;
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .result-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .error {
+            display: none;
+            color: #dc2626;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .error.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Currency Converter</h1>
+        <div class="converter-box">
+            <div class="amount-container">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="0" step="0.01" value="1">
+            </div>
+            <div class="currency-row">
+                <label for="from">From</label>
+                <select id="from"></select>
+            </div>
+            <button class="swap-btn" id="swap">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+            <div class="currency-row">
+                <label for="to">To</label>
+                <select id="to"></select>
+            </div>
+        </div>
+        <button class="convert-btn" id="convert">Convert</button>
+        <div class="loading">Converting...</div>
+        <div class="error">An error occurred. Please try again.</div>
+        <div class="result">
+            <div class="result-amount">0.00</div>
+            <div class="result-text">1 USD = 0.00 EUR</div>
+        </div>
+    </div>
+    <script>
+        const currencies = {
+            USD: "United States Dollar",
+            EUR: "Euro",
+            GBP: "British Pound Sterling",
+            JPY: "Japanese Yen",
+            AUD: "Australian Dollar",
+            CAD: "Canadian Dollar",
+            CHF: "Swiss Franc",
+            CNY: "Chinese Yuan",
+            INR: "Indian Rupee",
+            NZD: "New Zealand Dollar",
+            // Add more currencies as needed
+        };
+
+        const fromSelect = document.getElementById('from');
+        const toSelect = document.getElementById('to');
+        const amountInput = document.getElementById('amount');
+        const convertBtn = document.getElementById('convert');
+        const swapBtn = document.getElementById('swap');
+        const resultAmount = document.querySelector('.result-amount');
+        const resultText = document.querySelector('.result-text');
+        const loadingElement = document.querySelector('.loading');
+        const errorElement = document.querySelector('.error');
+
+        // Populate currency dropdowns
+        Object.entries(currencies).forEach(([code, name]) => {
+            const option1 = new Option(`${code} - ${name}`, code);
+            const option2 = new Option(`${code} - ${name}`, code);
+            fromSelect.add(option1);
+            toSelect.add(option2);
+        });
+
+        // Set default values
+        fromSelect.value = 'USD';
+        toSelect.value = 'EUR';
+
+        // Swap currencies
+        swapBtn.addEventListener('click', () => {
+            const temp = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = temp;
+            convertCurrency();
+        });
+
+        // Convert currency
+        async function convertCurrency() {
+            const amount = parseFloat(amountInput.value);
+            const fromCurrency = fromSelect.value;
+            const toCurrency = toSelect.value;
+
+            if (isNaN(amount) || amount <= 0) {
+                errorElement.textContent = 'Please enter a valid amount';
+                errorElement.classList.add('active');
+                return;
+            }
+
+            try {
+                errorElement.classList.remove('active');
+                loadingElement.classList.add('active');
+
+                // For demonstration, we'll use a fixed exchange rate
+                // In a real application, you would fetch this from an API
+                const rate = await getMockExchangeRate(fromCurrency, toCurrency);
+                
+                const convertedAmount = (amount * rate).toFixed(2);
+                resultAmount.textContent = `${convertedAmount} ${toCurrency}`;
+                resultText.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            } catch (error) {
+                errorElement.textContent = 'Error fetching exchange rates. Please try again.';
+                errorElement.classList.add('active');
+            } finally {
+                loadingElement.classList.remove('active');
+            }
+        }
+
+        // Mock exchange rate function (replace with real API in production)
+        async function getMockExchangeRate(from, to) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const mockRates = {
+                'USD': 1,
+                'EUR': 0.85,
+                'GBP': 0.73,
+                'JPY': 110.0,
+                'AUD': 1.35,
+                'CAD': 1.25,
+                'CHF': 0.92,
+                'CNY': 6.45,
+                'INR': 74.5,
+                'NZD': 1.45,
+            };
+
+            const fromRate = mockRates[from];
+            const toRate = mockRates[to];
+            return toRate / fromRate;
+        }
+
+        // Event listeners
+        convertBtn.addEventListener('click', convertCurrency);
+        amountInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') convertCurrency();
+        });
+
+        // Initial conversion
+        convertCurrency();
+    </script>
+</body>
+</html>
