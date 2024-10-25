@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Carousel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 400px;
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .carousel-button:hover {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .carousel-button-prev {
+            left: 20px;
+        }
+
+        .carousel-button-next {
+            right: 20px;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        .carousel-button svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @media (max-width: 768px) {
+            .carousel {
+                max-width: 100%;
+                margin: 0 20px;
+            }
+
+            .carousel-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel">
+        <div class="carousel-container">
+            <div class="carousel-slide">
+                <img src="/api/placeholder/800/400" alt="Mountain landscape">
+            </div>
+            <div class="carousel-slide">
+                <img src="/api/placeholder/800/400" alt="Ocean sunset">
+            </div>
+            <div class="carousel-slide">
+                <img src="/api/placeholder/800/400" alt="Forest path">
+            </div>
+            <div class="carousel-slide">
+                <img src="/api/placeholder/800/400" alt="Desert dunes">
+            </div>
+        </div>
+
+        <button class="carousel-button carousel-button-prev" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </button>
+        <button class="carousel-button carousel-button-next" aria-label="Next slide">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"></path>
+            </svg>
+        </button>
+
+        <div class="carousel-dots"></div>
+    </div>
+
+    <script>
+        class Carousel {
+            constructor(element) {
+                this.carousel = element;
+                this.container = element.querySelector('.carousel-container');
+                this.slides = element.querySelectorAll('.carousel-slide');
+                this.prevButton = element.querySelector('.carousel-button-prev');
+                this.nextButton = element.querySelector('.carousel-button-next');
+                this.dotsContainer = element.querySelector('.carousel-dots');
+                
+                this.currentIndex = 0;
+                this.slideCount = this.slides.length;
+                this.isAnimating = false;
+
+                this.init();
+            }
+
+            init() {
+                // Create dots
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('carousel-dot');
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.dotsContainer.appendChild(dot);
+                });
+
+                // Set initial active dot
+                this.updateDots();
+
+                // Add event listeners
+                this.prevButton.addEventListener('click', () => this.prevSlide());
+                this.nextButton.addEventListener('click', () => this.nextSlide());
+
+                // Start autoplay
+                this.startAutoplay();
+
+                // Add touch support
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                this.carousel.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+
+                this.carousel.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 50) {
+                        this.nextSlide();
+                    } else if (touchEndX - touchStartX > 50) {
+                        this.prevSlide();
+                    }
+                });
+            }
+
+            startAutoplay() {
+                this.autoplayInterval = setInterval(() => {
+                    this.nextSlide();
+                }, 5000);
+
+                // Pause autoplay on hover
+                this.carousel.addEventListener('mouseenter', () => {
+                    clearInterval(this.autoplayInterval);
+                });
+
+                this.carousel.addEventListener('mouseleave', () => {
+                    this.startAutoplay();
+                });
+            }
+
+            updateDots() {
+                const dots = this.dotsContainer.querySelectorAll('.carousel-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            goToSlide(index) {
+                if (!this.isAnimating && index !== this.currentIndex) {
+                    this.isAnimating = true;
+                    this.currentIndex = index;
+                    this.container.style.transform = `translateX(-${index * 100}%)`;
+                    this.updateDots();
+                    setTimeout(() => {
+                        this.isAnimating = false;
+                    }, 500);
+                }
+            }
+
+            prevSlide() {
+                const index = (this.currentIndex - 1 + this.slideCount) % this.slideCount;
+                this.goToSlide(index);
+            }
+
+            nextSlide() {
+                const index = (this.currentIndex + 1) % this.slideCount;
+                this.goToSlide(index);
+            }
+        }
+
+        // Initialize carousel
+        const carousel = new Carousel(document.querySelector('.carousel'));
+    </script>
+</body>
+</html>
