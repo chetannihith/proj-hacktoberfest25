@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #0891b2, #2563eb);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .progress-container {
+            margin-bottom: 1rem;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            background: #e2e8f0;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        .score {
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .quiz-content {
+            padding: 2rem;
+        }
+
+        .question {
+            font-size: 1.25rem;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+
+        .option:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .option.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .option.correct {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option.wrong {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-next {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-restart {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-restart:hover {
+            background: #b91c1c;
+        }
+
+        .result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+
+        .result-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .result-message {
+            color: #64748b;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .feedback.correct {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .feedback.wrong {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="progress-container">
+                <div class="progress-text">
+                    <span class="question-count">Question 1/5</span>
+                    <span class="score">Score: 0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 20%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-content">
+            <div class="question"></div>
+            <div class="options"></div>
+            <div class="feedback hidden"></div>
+        </div>
+
+        <div class="footer">
+            <button class="btn btn-restart hidden">Restart Quiz</button>
+            <button class="btn btn-next">Next Question</button>
+        </div>
+
+        <div class="result hidden">
+            <h2 class="result-title">Quiz Complete!</h2>
+            <div class="result-score">0%</div>
+            <p class="result-message"></p>
+            <button class="btn btn-restart">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the capital of France?",
+                options: ["London", "Berlin", "Paris", "Madrid"],
+                correct: 2,
+                explanation: "Paris is the capital and largest city of France, known for iconic landmarks like the Eiffel Tower."
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correct: 1,
+                explanation: "Mars appears red due to iron oxide (rust) on its surface, earning it the nickname 'Red Planet'."
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                options: ["African Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+                correct: 1,
+                explanation: "The Blue Whale is the largest animal known to have ever existed, reaching lengths of up to 100 feet."
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                correct: 2,
+                explanation: "Leonardo da Vinci painted the Mona Lisa between 1503 and 1519. It's now displayed in the Louvre Museum."
+            },
+            {
+                question: "What is the chemical symbol for gold?",
+                options: ["Ag", "Fe", "Au", "Cu"],
+                correct: 2,
+                explanation: "Au is the chemical symbol for gold, derived from the Latin word 'aurum'."
+            }
+        ];
+
+        class Quiz {
+            constructor(data) {
+                this.quizData = data;
+                this.currentQuestion = 0;
+                this.score = 0;
+                this.answered = false;
+
+                // DOM elements
+                this.questionElement = document.querySelector('.question');
+                this.optionsElement = document.querySelector('.options');
+                this.progressElement = document.querySelector('.progress');
+                this.questionCountElement = document.querySelector('.question-count');
+                this.scoreElement = document.querySelector('.score');
+                this.nextButton = document.querySelector('.btn-next');
+                this.restartButtons = document.querySelectorAll('.btn-restart');
+                this.resultElement = document.querySelector('.result');
+                this.resultScoreElement = document.querySelector('.result-score');
+                this.resultMessageElement = document.querySelector('.result-message');
+                this.feedbackElement = document.querySelector('.feedback');
+                this.quizContent = document.querySelector('.quiz-content');
+                this.header = document.querySelector('.header');
+                this.footer = document.querySelector('.footer');
+
+                // Event listeners
+                this.nextButton.addEventListener('click', () => this.handleNext());
+                this.restartButtons.forEach(button => {
+                    button.addEventListener('click', () => this.restartQuiz());
+                });
+
+                this.loadQuestion();
+            }
+
+            loadQuestion() {
+                const question = this.quizData[this.currentQuestion];
+                this.answered = false;
+                this.questionElement.textContent = question.question;
+                this.optionsElement.innerHTML = '';
+                this.feedbackElement.classList.add('hidden');
+                
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'option';
+                    button.textContent = option;
+                    button.addEventListener('click', () => this.checkAnswer(index));
+                    this.optionsElement.appendChild(button);
+                });
+
+                this.updateProgress();
+            }
+
+            checkAnswer(selectedIndex) {
+                if (this.answered) return;
+                
+                this.answered = true;
+                const correct = this.quizData[this.currentQuestion].correct;
+                const options = this.optionsElement.children;
+                
+                options[selectedIndex].classList.add('selected');
+                
+                if (selectedIndex === correct) {
+                    this.score++;
+                    options[selectedIndex].classList.add('correct');
+                    this.showFeedback(true);
+                } else {
+                    options[selectedIndex].classList.add('wrong');
+                    options[correct].classList.add('correct');
+                    this.showFeedback(false);
+                }
+
+                this.updateScore();
+            }
+
+            showFeedback(isCorrect) {
+                const explanation = this.quizData[this.currentQuestion].explanation;
+                this.feedbackElement.textContent = `${isCorrect ? 'Correct!' : 'Incorrect.'} ${explanation}`;
+                this.feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
+                this.feedbackElement.classList.remove('hidden');
+            }
+
+            handleNext() {
+                if (!this.answered) {
+                    alert('Please select an answer first!');
+                    return;
+                }
+
+                this.currentQuestion++;
+                
+                if (this.currentQuestion < this.quizData.length) {
+                    this.loadQuestion();
+                } else {
+                    this.showResult();
+                }
+            }
+
+            updateProgress() {
+                const progress = ((this.currentQuestion + 1) / this.quizData.length) * 100;
+                this.progressElement.style.width = `${progress}%`;
+                this.questionCountElement.textContent = `Question ${this.currentQuestion + 1}/${this.quizData.length}`;
+            }
+
+            updateScore() {
+                this.scoreElement.textContent = `Score: ${this.score}`;
+            }
+
+            showResult() {
+                this.quizContent.classList.add('hidden');
+                this.header.classList.add('hidden');
+                this.footer.classList.add('hidden');
+                this.resultElement.classList.remove('hidden');
+
+                const percentage = (this.score / this.quizData.length) * 100;
+                this.resultScoreElement.textContent = `${Math.round(percentage)}%`;
+
+                let message;
+                if (percentage === 100) {
+                    message = "Perfect score! You're a quiz master! 🏆";
+                } else if (percentage >= 80) {
+                    message = "Great job! You really know your stuff! 👏";
+                } else if (percentage >= 60) {
+                    message = "Good effort! Keep learning and try again! 👍";
+                } else {
+                    message = "Don't worry! Practice makes perfect. Try again! 💪";
+                }
+
+                this.resultMessageElement.textContent = message;
+            }
+
+            restartQuiz() {
+                this.currentQuestion = 0;
+                this.score = 0;
+                this.answered = false;
+                
+                this.quizContent.classList.remove('hidden');
+                this.header.classList.remove('hidden');
+                this.footer.classList.remove('hidden');
+                this.resultElement.classList.add('hidden');
+                
+                this.loadQuestion();
+                this.updateScore();
+            }
+        }
+
+        // Initialize the quiz
+        const quiz = new Quiz(quizData);
+    </script>
+</body>
+</html>
