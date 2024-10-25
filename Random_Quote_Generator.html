@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Quote Generator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .quote-box {
+            margin: 20px 0;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .quote-text {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            position: relative;
+            transition: opacity 0.5s ease;
+        }
+
+        .quote-text::before,
+        .quote-text::after {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            opacity: 0.1;
+            font-family: Georgia, serif;
+        }
+
+        .quote-text::before {
+            top: -20px;
+            left: -20px;
+        }
+
+        .quote-text::after {
+            bottom: -40px;
+            right: -20px;
+        }
+
+        .quote-author {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            transition: opacity 0.5s ease;
+        }
+
+        .new-quote-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .new-quote-btn:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .new-quote-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .quote-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Quote Generator</h1>
+        <div class="quote-box">
+            <p class="quote-text" id="quote">Click the button to generate a quote</p>
+            <p class="quote-author" id="author"></p>
+        </div>
+        <button class="new-quote-btn" id="newQuoteBtn">Generate New Quote</button>
+    </div>
+
+    <script>
+        // Array of hardcoded quotes
+        const quotes = [
+            {
+                text: "Be yourself; everyone else is already taken.",
+                author: "Oscar Wilde"
+            },
+            {
+                text: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.",
+                author: "Albert Einstein"
+            },
+            {
+                text: "Be the change that you wish to see in the world.",
+                author: "Mahatma Gandhi"
+            },
+            {
+                text: "In three words I can sum up everything I've learned about life: it goes on.",
+                author: "Robert Frost"
+            },
+            {
+                text: "If you tell the truth, you don't have to remember anything.",
+                author: "Mark Twain"
+            },
+            {
+                text: "To live is the rarest thing in the world. Most people exist, that is all.",
+                author: "Oscar Wilde"
+            },
+            {
+                text: "Without music, life would be a mistake.",
+                author: "Friedrich Nietzsche"
+            },
+            {
+                text: "It is better to be hated for what you are than to be loved for what you are not.",
+                author: "Andre Gide"
+            },
+            {
+                text: "I have not failed. I've just found 10,000 ways that won't work.",
+                author: "Thomas A. Edison"
+            },
+            {
+                text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                author: "Winston Churchill"
+            },
+            {
+                text: "Life is what happens to us while we are making other plans.",
+                author: "Allen Saunders"
+            },
+            {
+                text: "Everything you can imagine is real.",
+                author: "Pablo Picasso"
+            }
+        ];
+
+        const quoteText = document.getElementById('quote');
+        const authorText = document.getElementById('author');
+        const newQuoteBtn = document.getElementById('newQuoteBtn');
+
+        // Keep track of the last shown quote to avoid repetition
+        let lastQuoteIndex = -1;
+
+        function getRandomQuote() {
+            let randomIndex;
+            // Make sure we don't show the same quote twice in a row
+            do {
+                randomIndex = Math.floor(Math.random() * quotes.length);
+            } while (randomIndex === lastQuoteIndex && quotes.length > 1);
+            
+            lastQuoteIndex = randomIndex;
+            return quotes[randomIndex];
+        }
+
+        function displayNewQuote() {
+            // Add fade-out effect
+            quoteText.style.opacity = 0;
+            authorText.style.opacity = 0;
+            
+            setTimeout(() => {
+                const { text, author } = getRandomQuote();
+                quoteText.textContent = text;
+                authorText.textContent = `— ${author}`;
+                
+                // Add fade-in effect
+                quoteText.style.opacity = 1;
+                authorText.style.opacity = 1;
+            }, 500);
+        }
+
+        // Event listener for the button
+        newQuoteBtn.addEventListener('click', displayNewQuote);
+
+        // Generate first quote on page load
+        displayNewQuote();
+    </script>
+</body>
+</html>
