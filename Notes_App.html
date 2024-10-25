@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .add-note-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .add-note-btn:hover {
+            background: #45a049;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .note {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .note:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .note-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: none;
+            width: 100%;
+            border-bottom: 2px solid transparent;
+        }
+
+        .note-title:focus {
+            outline: none;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .note-content {
+            width: 100%;
+            min-height: 150px;
+            padding: 5px;
+            border: none;
+            resize: vertical;
+            margin-bottom: 30px;
+        }
+
+        .note-content:focus {
+            outline: none;
+        }
+
+        .note-actions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .save-btn, .delete-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .save-btn:hover, .delete-btn:hover {
+            opacity: 0.9;
+        }
+
+        .timestamp {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+            font-size: 1rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notes App</h1>
+            <input type="text" class="search-box" placeholder="Search notes..." id="searchBox">
+            <button class="add-note-btn" id="addNoteBtn">Add New Note</button>
+        </div>
+        <div class="notes-grid" id="notesGrid">
+            <!-- Notes will be added here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        class NotesApp {
+            constructor() {
+                this.notes = [];
+                this.notesGrid = document.getElementById('notesGrid');
+                this.addNoteBtn = document.getElementById('addNoteBtn');
+                this.searchBox = document.getElementById('searchBox');
+
+                this.loadNotes();
+                this.addEventListeners();
+                this.renderNotes();
+            }
+
+            addEventListeners() {
+                this.addNoteBtn.addEventListener('click', () => this.addNote());
+                this.searchBox.addEventListener('input', () => this.filterNotes());
+            }
+
+            loadNotes() {
+                const savedNotes = localStorage.getItem('notes');
+                this.notes = savedNotes ? JSON.parse(savedNotes) : [];
+            }
+
+            saveNotes() {
+                localStorage.setItem('notes', JSON.stringify(this.notes));
+            }
+
+            addNote() {
+                const note = {
+                    id: Date.now(),
+                    title: 'Untitled Note',
+                    content: '',
+                    timestamp: new Date().toLocaleString()
+                };
+                this.notes.unshift(note);
+                this.saveNotes();
+                this.renderNotes();
+            }
+
+            updateNote(id, title, content) {
+                const note = this.notes.find(note => note.id === id);
+                if (note) {
+                    note.title = title;
+                    note.content = content;
+                    note.timestamp = new Date().toLocaleString();
+                    this.saveNotes();
+                }
+            }
+
+            deleteNote(id) {
+                this.notes = this.notes.filter(note => note.id !== id);
+                this.saveNotes();
+                this.renderNotes();
+            }
+
+            filterNotes() {
+                const searchTerm = this.searchBox.value.toLowerCase();
+                const filteredNotes = this.notes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) || 
+                    note.content.toLowerCase().includes(searchTerm)
+                );
+                this.renderNotes(filteredNotes);
+            }
+
+            createNoteElement(note) {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.innerHTML = `
+                    <input type="text" class="note-title" value="${note.title}" placeholder="Note title">
+                    <textarea class="note-content" placeholder="Write your note here...">${note.content}</textarea>
+                    <div class="timestamp">${note.timestamp}</div>
+                    <div class="note-actions">
+                        <button class="save-btn">Save</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                `;
+
+                // Add event listeners
+                const titleInput = noteElement.querySelector('.note-title');
+                const contentTextarea = noteElement.querySelector('.note-content');
+                const saveBtn = noteElement.querySelector('.save-btn');
+                const deleteBtn = noteElement.querySelector('.delete-btn');
+
+                let saveTimeout;
+
+                const autoSave = () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        this.updateNote(note.id, titleInput.value, contentTextarea.value);
+                    }, 500);
+                };
+
+                titleInput.addEventListener('input', autoSave);
+                contentTextarea.addEventListener('input', autoSave);
+                saveBtn.addEventListener('click', () => {
+                    this.updateNote(note.id, titleInput.value, contentTextarea.value);
+                    saveBtn.textContent = 'Saved!';
+                    setTimeout(() => {
+                        saveBtn.textContent = 'Save';
+                    }, 1000);
+                });
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to delete this note?')) {
+                        this.deleteNote(note.id);
+                    }
+                });
+
+                return noteElement;
+            }
+
+            renderNotes(notesToRender = this.notes) {
+                this.notesGrid.innerHTML = '';
+                
+                if (notesToRender.length === 0) {
+                    this.notesGrid.innerHTML = `
+                        <div class="empty-state">
+                            <p>No notes found. Click "Add New Note" to create one!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                notesToRender.forEach(note => {
+                    const noteElement = this.createNoteElement(note);
+                    this.notesGrid.appendChild(noteElement);
+                });
+            }
+        }
+
+        // Initialize the app
+        const notesApp = new NotesApp();
+    </script>
+</body>
+</html>
