@@ -1,0 +1,338 @@
+*
+{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+:root{
+    --primary-text-color:#182b56;
+    --secondary-text-color:#577592;
+    --accent-color:#2294ed;
+    --accent-color-dark:#1d69a3;
+    --padding-inline-section:20px;
+}
+body
+{
+    font-family:sans-serif,Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color:var(--primary-text-color);
+}
+h1{
+    font-size:3rem;
+}
+h2
+{
+    font-size:2rem;
+}
+h2
+{
+    font-size:1.5rem;
+}
+p
+{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size:1.5rem;
+    color:var(--secondary-text-color);
+    line-height: 1.8rem;
+}
+.small-bold-text
+{
+    font-size: 1rem;
+    font-weight: 700;
+}
+a{
+    text-decoration:none;
+    display:inline-block;
+}
+.container
+{
+    max-width:1180px;
+    margin-inline: auto;
+    padding-inline:var(--padding-inline-section);
+}
+.top-banner
+{
+background-image: url("https://picstatio.com/large/3u9vdp/abstract-blue-patterns-design.jpg");
+flex-wrap: wrap;
+}
+.banner-text
+{
+    color:white;
+padding: 15px 30px;
+text-align: center;
+}
+.main-nav
+{
+    margin-top:20px;
+justify-content: space-between;
+}
+.flex
+{
+    display: flex;
+    align-items: center;
+}
+ul
+{
+    list-style:none;
+}
+.company-logo img
+{
+    width:200px;
+    flex-wrap: wrap;
+}
+.nav-links{
+    flex-basis: 730px;
+}
+.nav-links ul
+{
+    justify-content: end;
+    gap:40px;
+}
+.hover-links
+{
+    color: var(--primary-text-color);
+    transition: 0.2s ease-out;
+}
+.hover-links:hover{
+color:var(--accent-color-dark)
+}
+.primary-button
+{
+    background-color: var(--accent-color);
+    border-radius: 6px;
+    font-weight: 700;
+    color: white !important;
+    padding:12px 24px;
+    box-shadow: var(--primary-text-color);
+    transition: 0.2s ease-out;
+}
+.primary-button:hover{
+    background-color:var(--accent-color-dark);
+}
+.secondary-button
+{
+    border: 0.5px solid var(--secondary-text-color);
+    border-radius: 6px;
+    font-weight: 700;
+    color: var(--primary-text-color) !important;
+    padding:12px 24px;
+    transition: 0.2s ease-out;
+}
+.secondary-button:hover{
+    border-color:var(--accent-color);
+    color: var(--accent-color) !important;
+}
+header
+{
+    padding:50px var(--padding-inline-section) 0;
+
+}
+.header-section
+{
+    justify-content: center;
+    gap:50px;
+
+}
+.header-right img
+{
+    width:600px;
+}
+.header-left
+{
+    max-width: 40vw;
+}
+.header-left h1{
+    margin-top:20px;
+    margin-bottom: 5px;
+    font-size: 50px;
+}
+.get-started-button
+{
+margin-top: 20px;
+}
+.header-left p
+{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.companies-header
+{
+    text-align:center;
+    margin-block: 30px;
+    color: var(--padding-inline-section);
+
+}
+.logos
+{
+    margin-top: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.logo
+{
+
+    height:40px;
+}
+.features-header
+{
+text-align: center;
+}
+.features-sectiom
+{
+    padding:80px var(--padding-inline-section) 0;
+    background-image: url("https://spng.pngfind.com/pngs/s/435-4357501_general-circle-hd-png-download.png");
+}
+.features-heading-text
+{
+    margin-bottom:20px;
+}
+.features-card img
+{
+    height: 60px;
+    width: 60px;
+}
+.features-area
+{
+    flex-wrap: wrap;
+    justify-content:space-between;
+    gap:40px;
+    margin-top: 20px;
+}
+.features-card
+{
+    flex-direction:column;
+    gap:20px;
+    max-width: 30%;
+    text-align: center;
+
+
+}
+.features-card p{
+    font-size:20px;
+}
+.big-feature-section
+{
+    padding:30px var(--padding-inline-section) 0;
+}
+.big-feature-container
+{
+    gap:30px;  
+}
+.feature-img img
+{
+    width:100%;
+}
+.feature-desc
+{
+    flex-direction: column;
+    align-items: flex-start;
+}
+.feature-desc div img
+{
+   width:50px;
+}
+.feature-desc div 
+{
+    flex:content
+}
+.feature-desc img
+{
+   width:150px;
+   
+}
+.feature-desc h4{
+    padding-bottom: 10px;
+}
+.feature-desc p{
+    padding-top :10px;;
+    font-size: 20px;
+}
+.examples-header
+{
+    text-align: center;
+    flex-direction: column;
+    gap:20px;
+}
+.examples-card
+{
+    width:23%;
+    position:relative;
+    min-height: 300px;
+    background: black;
+    background: linear-gradient(rgb(0,0,0,0.1),rgb(0,0,0,0.8)),url("https://th.bing.com/th/id/OIP.XQh-8VOpy6Kcw2VTQbzFRwAAAA?pid=ImgDet&w=300&h=308&rs=1");
+    background-size: cover;
+    transition:0.2s ease-out ;
+    }
+.examples-card:hover
+{
+box-shadow: 0 0 10px #888;
+}
+.card-text
+{
+   position:absolute;
+    bottom:20px;
+    left:20px;
+    right:20px;
+    color: white;
+
+}
+.examples-area
+{
+    justify-content: space-between;
+    margin-block:30px ;
+}
+.examples-card:nth-child(3)
+{
+    background:linear-gradient(rgb(0,0,0,0.1),rgb(0,0,0,0.8)),url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoYcMbKJC5YeEjwjkD5-0IWyecvfc5HtwpgA&usqp=CAU") ;
+    background-size: cover;
+}
+.examples-card:nth-child(2)
+{
+    background:linear-gradient(rgb(0,0,0,0.1),rgb(0,0,0,0.8)),url("https://onepagelove.com/wp-content/themes/onepagelove/frontend/img/social/one-page-love-meta.jpg") ;
+    background-size: cover;
+}
+.examples-card:nth-child(4)
+{
+    background:linear-gradient(rgb(0,0,0,0.1),rgb(0,0,0,0.8)),url("https://www.rollingstone.com/wp-content/uploads/2020/06/shutterstock_1752700166.jpg") ;
+    background-size: cover;
+}
+.cta-section-container
+{
+    flex-direction: column;
+    gap:30px;
+    color: white;
+}
+.cta-section
+{
+    padding:120px var(--padding-inline-section) 80px;
+    background-color: #182b54;
+}
+.cta-section-container p
+{
+color:white;
+margin-top:20px;
+}
+.link-column
+{
+flex-direction: column;
+align-items: flex-start;
+gap:15px;
+}
+.footer-container
+{
+    align-items: flex-start;
+    justify-content: space-between;
+}
+footer
+{
+    padding-block:80px ;
+    background-color: #ebf2fa;
+}
+.subfooter-container
+{
+flex-direction: row;
+justify-content: center;
+gap:30px;
+}
+.subfooter{
+background-color: #b9cde4;
+padding: var(--padding-inline-section);
+}
