@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Magic Show</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #eee, #ddd);
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card {
+            width: 70px;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.selected {
+            animation: fadeOut 0.3s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .card .value {
+            font-size: 18px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .card .suit {
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .card .value.bottom {
+            top: auto;
+            bottom: 10px;
+            transform: translateX(-50%) rotate(180deg);
+        }
+
+        .red { color: red; }
+        .black { color: black; }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Welcome to the Magic Show! 🎩✨</h1>
+        <p id="instruction">Are you ready to experience some magic?</p>
+        <div id="cards"></div>
+        <button id="actionBtn">Begin the Magic</button>
+        <p id="prediction" class="hidden"></p>
+    </div>
+
+    <script>
+        const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        let deck = [];
+        let selectedCard = null;
+        let stage = 0;
+
+        const cardsContainer = document.getElementById('cards');
+        const title = document.getElementById('title');
+        const instruction = document.getElementById('instruction');
+        const actionBtn = document.getElementById('actionBtn');
+        const predictionText = document.getElementById('prediction');
+
+        function initializeDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            shuffleDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function displayCards(selectable = false) {
+            cardsContainer.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const card = deck[i];
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                if (selectable) {
+                    cardDiv.addEventListener('click', () => selectCard(card));
+                }
+                cardDiv.innerHTML = `
+                    <div class="value ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black'}">${card.value}</div>
+                    <div class="suit ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black'}">${getSuitSymbol(card.suit)}</div>
+                    <div class="value bottom ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black'}">${card.value}</div>
+                `;
+                cardsContainer.appendChild(cardDiv);
+            }
+        }
+
+        function getSuitSymbol(suit) {
+            switch (suit) {
+                case 'hearts': return '♥';
+                case 'diamonds': return '♦';
+                case 'clubs': return '♣';
+                case 'spades': return '♠';
+            }
+        }
+
+        function selectCard(card) {
+            selectedCard = card;
+            const selectedCardDiv = event.target.closest('.card');
+            selectedCardDiv.classList.add('selected');
+            setTimeout(() => {
+                stage = 2;
+                updateStage();
+            }, 300);
+        }
+
+        function performMagicTrick() {
+            actionBtn.disabled = true;
+            title.textContent = 'Watch Carefully!';
+            instruction.textContent = 'Let me demonstrate my magical powers...';
+            actionBtn.textContent = 'Performing Magic...';
+
+            setTimeout(() => {
+                predictionText.textContent = `Your chosen card was: ${selectedCard.value} of ${selectedCard.suit}`;
+                predictionText.classList.remove('hidden');
+                actionBtn.textContent = 'Reveal the Magic';
+                actionBtn.disabled = false;
+            }, 1500);
+        }
+
+        function resetTrick() {
+            initializeDeck();
+            selectedCard = null;
+            stage = 0;
+            predictionText.classList.add('hidden');
+            updateStage();
+        }
+
+        function updateStage() {
+            switch (stage) {
+                case 0:
+                    title.textContent = 'Welcome to the Magic Show! 🎩✨';
+                    instruction.textContent = 'Are you ready to experience some magic?';
+                    actionBtn.textContent = 'Begin the Magic';
+                    cardsContainer.innerHTML = '';
+                    break;
+                case 1:
+                    title.textContent = 'Choose Your Card';
+                    instruction.textContent = 'Select any card from the deck, but remember it well!';
+                    actionBtn.textContent = 'Next';
+                    displayCards(true);
+                    break;
+                case 2:
+                    title.textContent = 'Watch Carefully!';
+                    instruction.textContent = 'Let me demonstrate my magical powers...';
+                    actionBtn.textContent = 'Reveal the Magic';
+                    actionBtn.onclick = performMagicTrick;
+                    displayCards();
+                    break;
+            }
+        }
+
+        actionBtn.addEventListener('click', () => {
+            stage++;
+            updateStage();
+        });
+
+        initializeDeck();
+        updateStage();
+    </script>
+</body>
+</html>
