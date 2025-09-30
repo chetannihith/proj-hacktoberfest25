@@ -1,4 +1,4 @@
-# Welcome to the Project Contributions Repository 🚀🦥
+# Welcome to the Project Contributions Repository 🚀
 
 ## About This Repo
 
@@ -49,5 +49,14 @@ If you find this repository useful, please give it a ⭐!
 We can't wait to see what projects you'll contribute! 🎉
 
 ---
+
+## A special thanks to all the contributors of this repository!!
+<a href="https://github.com/chetannihith/proj-hacktoberfest25/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=chetannihith/proj-hacktoberfest25" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
+
 
 Happy coding and collaborating! 🚀👨‍💻👩‍💻  
