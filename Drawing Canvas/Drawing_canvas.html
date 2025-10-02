@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .tool-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 5px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 120px;
+        }
+
+        .tool-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.clear {
+            background: #dc3545;
+        }
+
+        .tool-btn.clear:hover {
+            background: #c82333;
+        }
+
+        .tool-btn.save {
+            background: #28a745;
+        }
+
+        .tool-btn.save:hover {
+            background: #218838;
+        }
+
+        .canvas-container {
+            position: relative;
+            border: 3px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        canvas {
+            display: block;
+            background: white;
+            cursor: crosshair;
+        }
+
+        .brush-preview {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+
+        .instructions h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            padding: 5px 0;
+            color: #495057;
+        }
+
+        .instructions li:before {
+            content: "•";
+            color: #007bff;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .tool-group {
+                justify-content: space-between;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Drawing Canvas</h1>
+            <p class="subtitle">Create beautiful artwork with this interactive drawing tool</p>
+        </header>
+
+        <div class="app-container">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <label>Tool:</label>
+                    <select id="toolSelect" class="tool-btn">
+                        <option value="brush">Brush</option>
+                        <option value="eraser">Eraser</option>
+                        <option value="line">Line</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="circle">Circle</option>
+                    </select>
+                </div>
+
+                <div class="tool-group">
+                    <label>Brush Size:</label>
+                    <input type="range" id="brushSize" min="1" max="50" value="5">
+                    <span id="brushSizeValue">5px</span>
+                </div>
+
+                <div class="tool-group">
+                    <label>Colors:</label>
+                    <div class="color-options">
+                        <div class="color-option active" style="background-color: #000000;" data-color="#000000"></div>
+                        <div class="color-option" style="background-color: #ff0000;" data-color="#ff0000"></div>
+                        <div class="color-option" style="background-color: #0000ff;" data-color="#0000ff"></div>
+                        <div class="color-option" style="background-color: #00ff00;" data-color="#00ff00"></div>
+                        <div class="color-option" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                    </div>
+                    <input type="color" id="customColor" value="#000000">
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn clear" id="clearBtn">Clear Canvas</button>
+                    <button class="tool-btn save" id="saveBtn">Save Drawing</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="800" height="500"></canvas>
+            </div>
+
+            <div class="instructions">
+                <h3>How to Use:</h3>
+                <ul>
+                    <li><strong>Draw:</strong> Click and drag to draw with selected tool</li>
+                    <li><strong>Brush Tool:</strong> Freehand drawing with selected color and size</li>
+                    <li><strong>Eraser:</strong> Erase parts of your drawing</li>
+                    <li><strong>Shapes:</strong> Use line, rectangle, and circle tools for precise shapes</li>
+                    <li><strong>Custom Colors:</strong> Click the color picker or use preset colors</li>
+                    <li><strong>Save:</strong> Download your artwork as PNG image</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DrawingApp {
+            constructor() {
+                this.canvas = document.getElementById('drawingCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.isDrawing = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                this.currentTool = 'brush';
+                this.brushSize = 5;
+                this.currentColor = '#000000';
+                this.startX = 0;
+                this.startY = 0;
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setupCanvas();
+                this.updateBrushPreview();
+            }
+
+            setupCanvas() {
+                // Set canvas background to white
+                this.ctx.fillStyle = 'white';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Set initial drawing styles
+                this.ctx.lineJoin = 'round';
+                this.ctx.lineCap = 'round';
+                this.ctx.globalCompositeOperation = 'source-over';
+            }
+
+            setupEventListeners() {
+                // Mouse events
+                this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+                this.canvas.addEventListener('mousemove', this.draw.bind(this));
+                this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+                this.canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
+                this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
+                this.canvas.addEventListener('touchend', this.stopDrawing.bind(this));
+
+                // Tool controls
+                document.getElementById('toolSelect').addEventListener('change', (e) => {
+                    this.currentTool = e.target.value;
+                    this.updateCursor();
+                });
+
+                document.getElementById('brushSize').addEventListener('input', (e) => {
+                    this.brushSize = parseInt(e.target.value);
+                    document.getElementById('brushSizeValue').textContent = this.brushSize + 'px';
+                    this.updateBrushPreview();
+                });
+
+                // Color controls
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentColor = e.target.dataset.color;
+                        document.getElementById('customColor').value = this.currentColor;
+                    });
+                });
+
+                document.getElementById('customColor').addEventListener('input', (e) => {
+                    this.currentColor = e.target.value;
+                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                });
+
+                // Action buttons
+                document.getElementById('clearBtn').addEventListener('click', this.clearCanvas.bind(this));
+                document.getElementById('saveBtn').addEventListener('click', this.saveDrawing.bind(this));
+
+                // Update cursor on mouse move over canvas
+                this.canvas.addEventListener('mousemove', (e) => {
+                    this.updateBrushPreview(e);
+                });
+            }
+
+            startDrawing(e) {
+                this.isDrawing = true;
+                const pos = this.getMousePos(e);
+                [this.lastX, this.lastY] = [pos.x, pos.y];
+                [this.startX, this.startY] = [pos.x, pos.y];
+                
+                if (this.currentTool === 'brush') {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.lastX, this.lastY);
+                }
+            }
+
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const pos = this.getMousePos(e);
+                const currentX = pos.x;
+                const currentY = pos.y;
+
+                this.ctx.strokeStyle = this.currentTool === 'eraser' ? 'white' : this.currentColor;
+                this.ctx.lineWidth = this.brushSize;
+
+                switch (this.currentTool) {
+                    case 'brush':
+                    case 'eraser':
+                        this.ctx.lineTo(currentX, currentY);
+                        this.ctx.stroke();
+                        break;
+                    
+                    case 'line':
+                        this.redrawCanvas();
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(this.startX, this.startY);
+                        this.ctx.lineTo(currentX, currentY);
+                        this.ctx.stroke();
+                        break;
+                    
+                    case 'rectangle':
+                        this.redrawCanvas();
+                        this.ctx.strokeRect(this.startX, this.startY, currentX - this.startX, currentY - this.startY);
+                        break;
+                    
+                    case 'circle':
+                        this.redrawCanvas();
+                        const radius = Math.sqrt(Math.pow(currentX - this.startX, 2) + Math.pow(currentY - this.startY, 2));
+                        this.ctx.beginPath();
+                        this.ctx.arc(this.startX, this.startY, radius, 0, 2 * Math.PI);
+                        this.ctx.stroke();
+                        break;
+                }
+
+                [this.lastX, this.lastY] = [currentX, currentY];
+            }
+
+            stopDrawing() {
+                if (!this.isDrawing) return;
+                this.isDrawing = false;
+                
+                if (this.currentTool === 'brush') {
+                    this.ctx.beginPath();
+                }
+            }
+
+            handleTouchStart(e) {
+                e.preventDefault();
+                this.startDrawing(e.touches[0]);
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                this.draw(e.touches[0]);
+            }
+
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+
+            redrawCanvas() {
+                // For shape tools, we need to redraw the canvas without the current temporary shape
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = this.canvas.width;
+                tempCanvas.height = this.canvas.height;
+                tempCtx.drawImage(this.canvas, 0, 0);
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(tempCanvas, 0, 0);
+            }
+
+            clearCanvas() {
+                if (confirm('Are you sure you want to clear the canvas?')) {
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+
+            saveDrawing() {
+                const link = document.createElement('a');
+                link.download = 'my-drawing.png';
+                link.href = this.canvas.toDataURL();
+                link.click();
+            }
+
+            updateCursor() {
+                this.canvas.style.cursor = this.currentTool === 'eraser' ? 
+                    `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${this.brushSize * 2}" height="${this.brushSize * 2}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="white" stroke="black" stroke-width="2"/></svg>') ${this.brushSize} ${this.brushSize}, auto` : 
+                    'crosshair';
+            }
+
+            updateBrushPreview(e) {
+                // Remove existing preview
+                const existingPreview = document.querySelector('.brush-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+
+                if (e && this.currentTool === 'brush') {
+                    const preview = document.createElement('div');
+                    preview.className = 'brush-preview';
+                    preview.style.width = `${this.brushSize * 2}px`;
+                    preview.style.height = `${this.brushSize * 2}px`;
+                    preview.style.color = this.currentColor;
+                    
+                    const pos = this.getMousePos(e);
+                    preview.style.left = `${pos.x}px`;
+                    preview.style.top = `${pos.y}px`;
+                    
+                    this.canvas.parentNode.appendChild(preview);
+                }
+            }
+        }
+
+        // Initialize the drawing app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DrawingApp();
+        });
+    </script>
+</body>
+</html>
