@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Weather Index Predictor - Prediction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #ffffff !important;
+        }
+        .nav-link {
+            color: #ffffff !important;
+        }
+        .nav-link:hover {
+            color: #cccccc !important;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .footer {
+            background-color: #343a40;
+            color: #ffffff;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">FWI Predictor</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('predict_datapoint') }}">Predict</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 form-container animate__animated animate__fadeIn">
+                <h1 class="text-center">FWI Prediction</h1>
+
+                <form action="{{ url_for('predict_datapoint') }}" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Temperature" placeholder="Temperature" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="RH" placeholder="RH" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Ws" placeholder="Ws" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Rain" placeholder="Rain" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="FFMC" placeholder="FFMC" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="DMC" placeholder="DMC" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="ISI" placeholder="ISI" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Classes" placeholder="Classes" required="required" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Region" placeholder="Region" required="required" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Predict</button>
+                </form>
+                {% if results %}
+                <div class="result text-center animate__animated animate__pulse">
+                    <h2>The FWI Prediction is: {{ results }}</h2>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- <footer class="footer">
+        <p>&copy; 2024 FWI Predictor. All rights reserved.</p>
+    </footer> -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
