@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/code/machine%20learning%20practice/26%20MLflow/mlruns/0/1922683b5a2d42fb861d4dd1326d9bae/artifacts
+end_time: 1758095933269
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 1922683b5a2d42fb861d4dd1326d9bae
+run_name: ambitious-trout-314
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758095918628
+status: 3
+tags: []
+user_id: Anhad Mahajan
