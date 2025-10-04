@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/code/machine%20learning%20practice/26%20MLflow/mlruns/0/aca7506d629e475b833bfcc05570151c/artifacts
+end_time: 1758096206002
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: aca7506d629e475b833bfcc05570151c
+run_name: clumsy-quail-456
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758096194534
+status: 3
+tags: []
+user_id: Anhad Mahajan
